@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>铁花入梦｜线上沉浸式打铁花原型</title>
+  <style>
+    :root {
+      --gold: #ffd27a;
+      --orange: #ff8a2a;
+      --deep: #060812;
+      --panel: rgba(8, 11, 24, 0.68);
+      --line: rgba(255, 210, 122, 0.24);
+      --text: rgba(255, 246, 225, 0.92);
+      --muted: rgba(255, 232, 195, 0.68);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #050611;
+      color: var(--text);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      user-select: none;
+    }
+    #scene {
+      position: fixed;
+      inset: 0;
+      display: block;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(64, 84, 150, 0.32), transparent 28%),
+        radial-gradient(circle at 20% 80%, rgba(121, 42, 19, 0.28), transparent 34%),
+        linear-gradient(180deg, #060716 0%, #0b1025 42%, #120b10 100%);
+    }
+    .vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, transparent 0%, transparent 42%, rgba(0,0,0,0.42) 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.36));
+      z-index: 2;
+    }
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.88;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.88) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(255,220,160,0.62) 1px, transparent 1.5px);
+      background-size: 170px 170px, 260px 260px;
+      background-position: 20px 40px, 90px 120px;
+      animation: twinkle 5s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle {
+      from { opacity: 0.48; transform: translateY(0); }
+      to { opacity: 0.85; transform: translateY(8px); }
+    }
+    .stage {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      transform: translate3d(calc(var(--look-x, 0) * -12px), calc(var(--look-y, 0) * -18px), 0);
+      transition: transform 0.25s ease-out;
+    }
+    .moon {
+      position: absolute;
+      right: 12vw;
+      top: 9vh;
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 36% 34%, #fff8d8, #f2c66b 58%, rgba(242,198,107,0.18) 72%, transparent 74%);
+      box-shadow: 0 0 45px rgba(255, 219, 136, 0.35);
+      opacity: 0.78;
+    }
+    .mountain {
+      position: absolute;
+      left: -6vw;
+      bottom: 15vh;
+      width: 112vw;
+      height: 32vh;
+      background:
+        linear-gradient(140deg, transparent 0 16%, rgba(8,13,27,0.62) 16.2% 42%, transparent 42.3%),
+        linear-gradient(34deg, transparent 0 24%, rgba(5,11,21,0.75) 24.2% 52%, transparent 52.3%),
+        linear-gradient(155deg, transparent 0 42%, rgba(10,16,30,0.7) 42.2% 76%, transparent 76.3%);
+      filter: blur(0.3px);
+      opacity: 0.68;
+    }
+    .ground {
+      position: absolute;
+      left: -5vw;
+      right: -5vw;
+      bottom: -10vh;
+      height: 32vh;
+      background:
+        radial-gradient(ellipse at 50% 10%, rgba(255, 114, 38, 0.22), transparent 42%),
+        linear-gradient(180deg, rgba(39, 17, 13, 0.05), #120806 72%);
+      border-top: 1px solid rgba(255, 174, 91, 0.13);
+    }
+    .shed {
+      position: absolute;
+      left: 50%;
+      top: 44%;
+      width: 620px;
+      height: 220px;
+      transform: translate(-50%, -50%);
+      opacity: 0.85;
+    }
+    .shed::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 40px;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(255, 211, 139, 0.7), transparent);
+      box-shadow:
+        0 52px 0 rgba(255, 211, 139, 0.18),
+        0 104px 0 rgba(255, 211, 139, 0.1);
+    }
+    .shed::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0 8%, rgba(255, 211, 139, 0.24) 8.2% 8.8%, transparent 9% 28%, rgba(255, 211, 139, 0.22) 28.2% 28.8%, transparent 29% 50%, rgba(255, 211, 139, 0.25) 50.2% 50.8%, transparent 51% 72%, rgba(255, 211, 139, 0.22) 72.2% 72.8%, transparent 73% 92%, rgba(255, 211, 139, 0.24) 92.2% 92.8%, transparent 93%);
+      filter: drop-shadow(0 0 12px rgba(255, 155, 63, 0.25));
+    }
+    .artisan {
+      position: absolute;
+      left: 50%;
+      bottom: 14.5vh;
+      width: 92px;
+      height: 148px;
+      transform: translateX(-50%);
+      filter: drop-shadow(0 0 22px rgba(255, 118, 36, 0.34));
+      opacity: 0.92;
+    }
+    .artisan .head {
+      position: absolute;
+      top: 0;
+      left: 35px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #100a08;
+    }
+    .artisan .body {
+      position: absolute;
+      top: 26px;
+      left: 30px;
+      width: 36px;
+      height: 70px;
+      border-radius: 22px 22px 10px 10px;
+      background: linear-gradient(180deg, #1a0d08, #070503);
+    }
+    .artisan .arm-left, .artisan .arm-right {
+      position: absolute;
+      top: 42px;
+      width: 70px;
+      height: 9px;
+      background: #0b0604;
+      border-radius: 999px;
+    }
+    .artisan .arm-left {
+      left: -24px;
+      transform-origin: right center;
+      transform: rotate(-24deg);
+    }
+    .artisan .arm-right {
+      left: 45px;
+      transform-origin: left center;
+      transform: rotate(22deg);
+    }
+    .artisan .leg-left, .artisan .leg-right {
+      position: absolute;
+      top: 92px;
+      width: 12px;
+      height: 56px;
+      background: #090503;
+      border-radius: 8px;
+    }
+    .artisan .leg-left { left: 31px; transform: rotate(10deg); }
+    .artisan .leg-right { left: 53px; transform: rotate(-10deg); }
+    .furnace {
+      position: absolute;
+      left: 50%;
+      bottom: 11vh;
+      width: 128px;
+      height: 64px;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 18px 18px;
+      background:
+        radial-gradient(circle at 50% 22%, rgba(255,245,190,0.9), rgba(255,132,40,0.7) 32%, transparent 62%),
+        linear-gradient(180deg, #32150e, #150807);
+      box-shadow:
+        0 0 42px rgba(255, 117, 35, 0.62),
+        0 0 100px rgba(255, 76, 18, 0.28);
+    }
+    .flame {
+      position: absolute;
+      left: 50%;
+      bottom: 15.5vh;
+      width: 70px;
+      height: 100px;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 40% 40%;
+      background:
+        radial-gradient(circle at 50% 60%, rgba(255,250,187,0.95), rgba(255,171,54,0.62) 38%, rgba(255,78,25,0.16) 65%, transparent 72%);
+      filter: blur(1px);
+      animation: flame 0.16s infinite alternate ease-in-out;
+      opacity: 0.84;
+    }
+    @keyframes flame {
+      from { transform: translateX(-50%) scale(0.92, 0.96) skewX(-3deg); }
+      to { transform: translateX(-50%) scale(1.08, 1.03) skewX(4deg); }
+    }
+    .lantern {
+      position: absolute;
+      width: 38px;
+      height: 54px;
+      border-radius: 18px 18px 22px 22px;
+      background:
+        linear-gradient(90deg, rgba(91, 20, 12, 0.75), rgba(255, 148, 58, 0.75), rgba(85, 18, 10, 0.8));
+      box-shadow: 0 0 24px rgba(255, 128, 48, 0.28);
+      opacity: 0.78;
+      animation: swing 2.8s ease-in-out infinite alternate;
+    }
+    .lantern::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: -86px;
+      width: 1px;
+      height: 86px;
+      background: rgba(255, 210, 122, 0.32);
+    }
+    .lantern.one { left: 16vw; top: 34vh; }
+    .lantern.two { right: 15vw; top: 38vh; animation-delay: -1.5s; }
+    @keyframes swing {
+      from { transform: rotate(-3deg); }
+      to { transform: rotate(4deg); }
+    }
+    .ui {
+      position: fixed;
+      z-index: 10;
+      inset: 0;
+      pointer-events: none;
+    }
+    .hero {
+      position: absolute;
+      left: 28px;
+      top: 24px;
+      width: min(430px, calc(100vw - 56px));
+      padding: 20px 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(11, 14, 30, 0.76), rgba(27, 12, 10, 0.42));
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.28);
+      pointer-events: auto;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      font-size: 13px;
+      letter-spacing: 0.24em;
+      color: var(--gold);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1.02;
+      letter-spacing: 0.03em;
+      font-weight: 800;
+      text-shadow: 0 0 24px rgba(255, 147, 58, 0.22);
+    }
+    .subtitle {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      appearance: none;
+      border: 1px solid rgba(255, 210, 122, 0.36);
+      border-radius: 999px;
+      padding: 10px 15px;
+      background: rgba(255, 210, 122, 0.1);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 210, 122, 0.18);
+      box-shadow: 0 0 22px rgba(255, 160, 56, 0.18);
+    }
+    button.primary {
+      background: linear-gradient(135deg, rgba(255, 207, 111, 0.95), rgba(255, 118, 35, 0.92));
+      color: #1a0c05;
+      border-color: transparent;
+      font-weight: 700;
+    }
+    .guide {
+      position: absolute;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      width: min(720px, calc(100vw - 56px));
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      pointer-events: auto;
+    }
+    .card {
+      min-height: 108px;
+      padding: 15px 16px;
+      border: 1px solid rgba(255, 210, 122, 0.2);
+      border-radius: 20px;
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 210, 122, 0.46);
+      background: rgba(21, 18, 31, 0.78);
+    }
+    .card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--gold);
+      font-size: 15px;
+    }
+    .card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .status {
+      position: absolute;
+      right: 24px;
+      top: 24px;
+      width: 280px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 210, 122, 0.18);
+      background: rgba(7, 10, 23, 0.58);
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .meter {
+      height: 8px;
+      border-radius: 999px;
+      margin-top: 10px;
+      background: rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    .meter i {
+      display: block;
+      height: 100%;
+      width: var(--spark-level, 18%);
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--gold), var(--orange));
+      box-shadow: 0 0 18px rgba(255, 140, 42, 0.5);
+      transition: width 0.2s ease;
+    }
+    .modal {
+      position: fixed;
+      right: 26px;
+      bottom: 26px;
+      z-index: 20;
+      width: min(430px, calc(100vw - 52px));
+      border: 1px solid rgba(255, 210, 122, 0.28);
+      border-radius: 24px;
+      padding: 20px 22px;
+      background: rgba(8, 10, 22, 0.86);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 28px 90px rgba(0,0,0,0.42);
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .modal.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .modal h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      color: var(--gold);
+    }
+    .modal p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+    .modal .close {
+      position: absolute;
+      right: 14px;
+      top: 12px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.72);
+    }
+    .hotspot {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 220, 138, 0.95);
+      box-shadow: 0 0 0 0 rgba(255, 209, 122, 0.72), 0 0 26px rgba(255, 140, 45, 0.5);
+      z-index: 8;
+      pointer-events: auto;
+      cursor: pointer;
+      animation: pulse 1.35s infinite;
+    }
+    .hotspot::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 26px;
+      top: 50%;
+      transform: translateY(-50%);
+      white-space: nowrap;
+      color: rgba(255, 244, 220, 0.86);
+      font-size: 13px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(8, 10, 20, 0.5);
+      border: 1px solid rgba(255, 210, 122, 0.12);
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 209, 122, 0.62), 0 0 26px rgba(255, 140, 45, 0.5); }
+      100% { box-shadow: 0 0 0 18px rgba(255, 209, 122, 0), 0 0 26px rgba(255, 140, 45, 0.5); }
+    }
+    .hotspot.one { left: 48%; top: 36%; }
+    .hotspot.two { left: 54%; top: 67%; }
+    .hotspot.three { left: 36%; top: 47%; }
+    .look-hint {
+      position: fixed;
+      left: 50%;
+      top: 18%;
+      z-index: 9;
+      transform: translateX(-50%);
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(5, 8, 18, 0.56);
+      border: 1px solid rgba(255, 210, 122, 0.16);
+      color: rgba(255, 238, 205, 0.78);
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .look-hint.show { opacity: 1; }
+    @media (max-width: 860px) {
+      .hero {
+        left: 16px;
+        top: 16px;
+        padding: 16px 17px;
+      }
+      .status { display: none; }
+      .guide {
+        grid-template-columns: 1fr;
+        bottom: 12px;
+        gap: 8px;
+      }
+      .card {
+        min-height: auto;
+        padding: 12px 14px;
+      }
+      .card span { display: none; }
+      .shed {
+        width: 78vw;
+        top: 48%;
+      }
+      .hotspot::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <div class="stars"></div>
+  <div class="stage" id="stage">
+    <div class="moon"></div>
+    <div class="mountain"></div>
+    <div class="shed"></div>
+    <div class="lantern one"></div>
+    <div class="lantern two"></div>
+    <div class="flame"></div>
+    <div class="furnace"></div>
+    <div class="artisan">
+      <div class="head"></div>
+      <div class="body"></div>
+      <div class="arm-left"></div>
+      <div class="arm-right"></div>
+      <div class="leg-left"></div>
+      <div class="leg-right"></div>
+    </div>
+    <button class="hotspot one" data-label="花棚爆散" data-topic="shed"></button>
+    <button class="hotspot two" data-label="铁水与炉火" data-topic="furnace"></button>
+    <button class="hotspot three" data-label="匠人技艺" data-topic="artisan"></button>
+    <div class="ground"></div>
+  </div>
+  <div class="vignette"></div>
+
+  <main class="ui">
+    <section class="hero">
+      <p class="eyebrow">ONLINE INTANGIBLE HERITAGE EXPERIENCE</p>
+      <h1>铁花入梦</h1>
+      <p class="subtitle">
+        一个面向年轻人的线上打铁花沉浸体验原型。点击“开打一板”，模拟铁水升空、花棚爆散、火花从头顶洒落的过程。
+      </p>
+      <div class="controls">
+        <button class="primary" id="strikeBtn">开打一板</button>
+        <button id="lookBtn">抬头视角</button>
+        <button id="autoBtn">连续演示</button>
+        <button id="lowBtn">低性能模式</button>
+      </div>
+    </section>
+
+    <aside class="status">
+      <strong style="color: var(--gold);">原型提示</strong><br />
+      鼠标移动 / 手机触摸可轻微改变视角。正式版本可接入 WebXR、陀螺仪与空间音频，增强“从头顶飞过”的沉浸感。
+      <div class="meter"><i id="meterBar"></i></div>
+    </aside>
+
+    <section class="guide">
+      <article class="card" data-topic="experience">
+        <strong>1. 进入场景</strong>
+        <span>用户不是读百科，而是站到夜色广场中，先获得“我在现场”的感觉。</span>
+      </article>
+      <article class="card" data-topic="spark">
+        <strong>2. 抬头观火</strong>
+        <span>铁花从前方升空，在头顶爆散，再向四周落下，形成线上沉浸体验。</span>
+      </article>
+      <article class="card" data-topic="culture">
+        <strong>3. 点击解密</strong>
+        <span>火花结束后点击热点，了解危险性、工艺和节庆祈福含义。</span>
+      </article>
+    </section>
+  </main>
+
+  <div class="look-hint" id="lookHint">请抬头看花棚，铁花会从前上方飞过</div>
+
+  <section class="modal" id="modal">
+    <button class="close" id="closeBtn">×</button>
+    <h2 id="modalTitle">文化讲解</h2>
+    <p id="modalText">点击不同热点查看内容。</p>
+  </section>
+
+  <script>
+    const canvas = document.getElementById("scene");
+    const ctx = canvas.getContext("2d");
+    const root = document.documentElement;
+    const strikeBtn = document.getElementById("strikeBtn");
+    const lookBtn = document.getElementById("lookBtn");
+    const autoBtn = document.getElementById("autoBtn");
+    const lowBtn = document.getElementById("lowBtn");
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalText = document.getElementById("modalText");
+    const closeBtn = document.getElementById("closeBtn");
+    const lookHint = document.getElementById("lookHint");
+
+    let width = 0;
+    let height = 0;
+    let particles = [];
+    let autoTimer = null;
+    let lowMode = false;
+    let lastStrike = 0;
+    let lookX = 0;
+    let lookY = 0;
+
+    const content = {
+      experience: {
+        title: "体验目标：让文化先被“感受到”",
+        text: "打铁花很适合做线上沉浸体验，因为它本身具有强烈的声音、光影、危险感和节庆氛围。原型的重点不是复刻真实高温表演，而是让用户先进入场景，再理解文化。"
+      },
+      spark: {
+        title: "从头顶飞过：关键是视角设计",
+        text: "粒子不是在远处炸开，而是从用户前方升起，到头顶前上方爆散，再向侧后方散落。配合抬头视角、空间音效和震动反馈，可以更接近现场感。"
+      },
+      culture: {
+        title: "文化解密：从震撼到理解",
+        text: "火花结束后出现热点讲解，让用户了解打铁花的技艺训练、危险性、节庆祈福意义和非遗传承困境。这样方案就不只是好看，而是能服务文化传播。"
+      },
+      shed: {
+        title: "花棚爆散",
+        text: "传统打铁花通过击打高温铁水，使铁水冲向空中或花棚结构后爆散，形成火树银花般的视觉效果。网页原型用粒子爆散模拟这一瞬间。"
+      },
+      furnace: {
+        title: "铁水与炉火",
+        text: "真实表演涉及高温铁水，危险性很高，普通用户很难近距离体验。线上版本的价值在于安全地体验这种视觉震撼，并引导用户理解背后的工艺。"
+      },
+      artisan: {
+        title: "匠人技艺",
+        text: "打铁花的震撼来自匠人的经验、胆量和动作控制。原型后续可以加入第一人称互动，例如选择击打角度、力度，再观察铁花形态变化。"
+      }
+    };
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function random(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function makeParticle(x, y, vx, vy, size, life, hue, type) {
+      return { x, y, vx, vy, px: x, py: y, size, life, maxLife: life, hue, type };
+    }
+
+    function strike() {
+      const now = performance.now();
+      if (now - lastStrike < 450) return;
+      lastStrike = now;
+
+      const baseX = width * 0.5 + lookX * 32;
+      const baseY = height * 0.78;
+      const burstY = height * (lookY < -0.2 ? 0.18 : 0.26);
+      const count = lowMode ? 170 : 410;
+
+      for (let i = 0; i < count * 0.45; i++) {
+        const angle = random(-Math.PI * 0.58, -Math.PI * 0.42);
+        const speed = random(6, 13);
+        particles.push(makeParticle(
+          baseX + random(-12, 12),
+          baseY + random(-8, 8),
+          Math.cos(angle) * speed + random(-0.5, 0.5),
+          Math.sin(angle) * speed - random(3.2, 6.8),
+          random(1.4, 3.2),
+          random(54, 86),
+          random(35, 52),
+          "jet"
+        ));
+      }
+
+      setTimeout(() => {
+        const burstX = width * 0.5 + random(-28, 28);
+        const burstBaseY = burstY + random(-24, 20);
+
+        for (let i = 0; i < count; i++) {
+          const angle = random(Math.PI * 0.05, Math.PI * 0.95);
+          const radiusBias = Math.pow(Math.random(), 0.55);
+          const speed = random(2.4, 12.2) * (0.65 + radiusBias);
+          particles.push(makeParticle(
+            burstX + random(-30, 30),
+            burstBaseY + random(-14, 14),
+            Math.cos(angle) * speed * random(1.6, 3.2) + random(-1.8, 1.8),
+            -Math.sin(angle) * speed * random(0.25, 0.95) + random(-0.4, 2.8),
+            random(1, 3.4),
+            random(80, 150),
+            random(32, 48),
+            "burst"
+          ));
+        }
+
+        const nearCount = lowMode ? 32 : 72;
+        for (let i = 0; i < nearCount; i++) {
+          const side = Math.random() > 0.5 ? 1 : -1;
+          particles.push(makeParticle(
+            width * 0.5 + random(-120, 120),
+            height * random(0.02, 0.18),
+            side * random(2.5, 7.5),
+            random(2.5, 8.5),
+            random(2.6, 6.5),
+            random(70, 122),
+            random(35, 48),
+            "near"
+          ));
+        }
+      }, 420);
+
+      flash();
+      root.style.setProperty("--spark-level", "100%");
+      setTimeout(() => root.style.setProperty("--spark-level", "18%"), 900);
+      if ("vibrate" in navigator) navigator.vibrate(55);
+    }
+
+    function flash() {
+      const glow = document.createElement("div");
+      glow.style.position = "fixed";
+      glow.style.inset = "0";
+      glow.style.zIndex = "4";
+      glow.style.pointerEvents = "none";
+      glow.style.background = "radial-gradient(circle at 50% 32%, rgba(255,224,154,0.18), rgba(255,122,34,0.08) 28%, transparent 60%)";
+      glow.style.opacity = "1";
+      glow.style.transition = "opacity 0.48s ease";
+      document.body.appendChild(glow);
+      requestAnimationFrame(() => { glow.style.opacity = "0"; });
+      setTimeout(() => glow.remove(), 620);
+    }
+
+    function drawParticle(p) {
+      const t = Math.max(p.life / p.maxLife, 0);
+      const alpha = Math.min(1, t * 1.35);
+      const light = p.type === "near" ? 72 : 62;
+      const color = `hsla(${p.hue}, 100%, ${light}%, ${alpha})`;
+      const core = `hsla(52, 100%, 86%, ${alpha})`;
+
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+
+      ctx.beginPath();
+      ctx.strokeStyle = `hsla(${p.hue}, 100%, 62%, ${alpha * 0.62})`;
+      ctx.lineWidth = Math.max(1, p.size * 0.72);
+      ctx.moveTo(p.px, p.py);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+
+      const r = p.size * (p.type === "near" ? 4.8 : 3.2);
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+      grad.addColorStop(0, core);
+      grad.addColorStop(0.35, color);
+      grad.addColorStop(1, "rgba(255, 90, 20, 0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = core;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.7, p.size * 0.58), 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function updateParticles() {
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(5, 7, 18, 0.21)";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const groundGlow = ctx.createRadialGradient(width * 0.5, height * 0.82, 0, width * 0.5, height * 0.82, width * 0.34);
+      groundGlow.addColorStop(0, "rgba(255, 118, 35, 0.18)");
+      groundGlow.addColorStop(0.45, "rgba(255, 118, 35, 0.04)");
+      groundGlow.addColorStop(1, "rgba(255, 118, 35, 0)");
+      ctx.fillStyle = groundGlow;
+      ctx.fillRect(0, 0, width, height);
+      ctx.restore();
+
+      const gravity = 0.092;
+      const drag = 0.992;
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.px = p.x;
+        p.py = p.y;
+        p.vy += gravity * (p.type === "near" ? 1.18 : 1);
+        p.vx *= drag;
+        p.vy *= drag;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 1;
+        drawParticle(p);
+
+        if (p.life <= 0 || p.y > height + 90 || p.x < -120 || p.x > width + 120) {
+          particles.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(updateParticles);
+    }
+
+    function showTopic(topic) {
+      const data = content[topic];
+      if (!data) return;
+      modalTitle.textContent = data.title;
+      modalText.textContent = data.text;
+      modal.classList.add("show");
+    }
+
+    function setLook(x, y) {
+      lookX = Math.max(-1, Math.min(1, x));
+      lookY = Math.max(-1, Math.min(1, y));
+      root.style.setProperty("--look-x", lookX.toFixed(3));
+      root.style.setProperty("--look-y", lookY.toFixed(3));
+    }
+
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", (e) => {
+      const x = (e.clientX / width - 0.5) * 2;
+      const y = (e.clientY / height - 0.5) * 2;
+      setLook(x * 0.72, y * 0.72);
+    });
+    window.addEventListener("touchmove", (e) => {
+      const t = e.touches[0];
+      if (!t) return;
+      const x = (t.clientX / width - 0.5) * 2;
+      const y = (t.clientY / height - 0.5) * 2;
+      setLook(x * 0.9, y * 0.9);
+    }, { passive: true });
+
+    strikeBtn.addEventListener("click", strike);
+    lookBtn.addEventListener("click", () => {
+      setLook(0, -0.88);
+      lookHint.classList.add("show");
+      setTimeout(strike, 450);
+      setTimeout(() => lookHint.classList.remove("show"), 2600);
+    });
+    autoBtn.addEventListener("click", () => {
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        autoBtn.textContent = "连续演示";
+      } else {
+        strike();
+        autoTimer = setInterval(strike, 3200);
+        autoBtn.textContent = "停止演示";
+      }
+    });
+    lowBtn.addEventListener("click", () => {
+      lowMode = !lowMode;
+      lowBtn.textContent = lowMode ? "普通模式" : "低性能模式";
+    });
+    closeBtn.addEventListener("click", () => modal.classList.remove("show"));
+    document.querySelectorAll("[data-topic]").forEach((el) => {
+      el.addEventListener("click", () => showTopic(el.dataset.topic));
+    });
+
+    resize();
+    ctx.fillStyle = "#050712";
+    ctx.fillRect(0, 0, width, height);
+    updateParticles();
+
+    setTimeout(() => {
+      lookHint.classList.add("show");
+      setTimeout(() => lookHint.classList.remove("show"), 3000);
+    }, 600);
+    setTimeout(strike, 1200);
+  </script>
+</body>
+</html>

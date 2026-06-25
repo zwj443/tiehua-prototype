@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>铁花入梦｜线上沉浸式打铁花体验</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="stars" aria-hidden="true"></div>
+
+  <div class="stage" id="stage" aria-hidden="true">
+    <div class="moon"></div>
+    <div class="mountain"></div>
+    <div class="shed"></div>
+    <div class="lantern one"></div>
+    <div class="lantern two"></div>
+    <div class="flame"></div>
+    <div class="furnace"></div>
+    <div class="artisan">
+      <div class="head"></div>
+      <div class="body"></div>
+      <div class="arm-left"></div>
+      <div class="arm-right"></div>
+      <div class="leg-left"></div>
+      <div class="leg-right"></div>
+    </div>
+    <div class="ground"></div>
+  </div>
+
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="flash-layer" id="flashLayer" aria-hidden="true"></div>
+
+  <main class="ui">
+    <section class="home-screen active" id="homePanel" data-step="home" aria-label="主界面入口页">
+      <div class="home-tools" aria-label="快捷功能">
+        <button id="soundBtn" aria-pressed="true">声音开</button>
+        <button id="homeLowBtn" aria-pressed="false">低性能模式</button>
+      </div>
+
+      <div class="home-copy">
+        <p class="eyebrow">ONLINE INTANGIBLE HERITAGE EXPERIENCE</p>
+        <h1>铁花入梦</h1>
+        <p class="home-subtitle">线上沉浸式打铁花体验</p>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="enterBtn">进入体验</button>
+        <button id="aboutBtn">了解项目</button>
+      </div>
+    </section>
+
+    <section class="show-hud" id="showPanel" data-step="show" aria-label="打铁花表演页">
+      <div class="show-title">
+        <span>体验页</span>
+        <strong>打铁花表演中</strong>
+      </div>
+      <div class="show-actions">
+        <button class="primary" id="strikeBtn">开打一板</button>
+        <button id="lookBtn">抬头视角</button>
+        <button id="autoBtn">连续演示</button>
+        <button id="showSoundBtn" aria-pressed="true">声音开</button>
+        <button id="showHomeBtn">返回主界面</button>
+        <button id="cultureBtn">前往解密页面</button>
+      </div>
+      <div class="meter" aria-label="火花强度"><i id="meterBar"></i></div>
+    </section>
+
+    <section class="culture-panel" id="culturePanel" data-step="culture" aria-label="文化解密页">
+      <header class="decode-header">
+        <div>
+          <p class="eyebrow">CULTURE DECODE</p>
+          <h2>打铁花解密</h2>
+          <p class="decode-subtitle">一花一世界，一打一传承</p>
+        </div>
+        <div class="decode-actions">
+          <button class="primary" id="backShowBtn">返回体验页</button>
+          <button id="homeBtn">返回主界面</button>
+        </div>
+      </header>
+
+      <div class="decode-layout">
+        <nav class="decode-nav" aria-label="知识模块导航">
+          <button class="active" data-decode="craft">匠人技艺</button>
+          <button data-decode="danger">高温铁水与危险性</button>
+          <button data-decode="festival">节庆祈福意义</button>
+          <button data-decode="inheritance">非遗传承现状</button>
+        </nav>
+
+        <article class="decode-detail">
+          <div class="decode-image decode-image-craft" id="decodeImage" data-fallback="匠人技艺图像" aria-hidden="true"></div>
+          <div class="decode-text">
+            <p class="eyebrow" id="decodeEyebrow">MODULE 01</p>
+            <h3 id="decodeTitle">匠人技艺</h3>
+            <p id="decodeText">
+              打铁花不是简单的表演，而是依赖匠人长期训练形成的经验技艺。击打角度、力度、时机都会影响铁花的形态与安全性。
+            </p>
+          </div>
+        </article>
+      </div>
+
+      <div class="process-strip" aria-label="打铁花流程">
+        <article class="process-card process-melting">
+          <span>01</span>
+          <strong>熔铁</strong>
+          <p>将铁料加热至高温，使其化为炽热铁水。</p>
+        </article>
+        <article class="process-card process-pouring">
+          <span>02</span>
+          <strong>舀铁</strong>
+          <p>匠人用专用工具舀取铁水，准备击打。</p>
+        </article>
+        <article class="process-card process-striking">
+          <span>03</span>
+          <strong>击打</strong>
+          <p>用力击打铁水，使其向空中飞散。</p>
+        </article>
+        <article class="process-card process-blooming">
+          <span>04</span>
+          <strong>成花</strong>
+          <p>铁水在夜空中爆散，形成火树银花般的铁花。</p>
+        </article>
+      </div>
+    </section>
+
+    <aside class="status" id="statusPanel">
+      <strong>原型提示</strong>
+      <span>鼠标移动 / 手机触摸可改变视角。后续可接入陀螺仪、空间音频与震动反馈。</span>
+    </aside>
+  </main>
+
+  <div class="look-hint" id="lookHint">请抬头看花棚，铁花会从前上方飞过</div>
+
+  <section class="modal" id="modal" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
+    <button class="close" id="closeBtn" aria-label="关闭">×</button>
+    <h2 id="modalTitle">文化讲解</h2>
+    <p id="modalText">点击不同热点查看内容。</p>
+  </section>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
