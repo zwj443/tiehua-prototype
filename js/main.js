@@ -20,6 +20,8 @@ const cultureBtn = document.getElementById("cultureBtn");
 const backShowBtn = document.getElementById("backShowBtn");
 const homeBtn = document.getElementById("homeBtn");
 const showHomeBtn = document.getElementById("showHomeBtn");
+const showControlsCollapse = document.getElementById("showControlsCollapse");
+const showControlsOpen = document.getElementById("showControlsOpen");
 const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modalTitle");
 const modalText = document.getElementById("modalText");
@@ -41,6 +43,7 @@ let userAudioUnlocked = false;
 let lastStrike = -Infinity;
 let lookX = 0;
 let lookY = 0;
+let showControlsCollapsed = false;
 
 const decodeModules = {
   craft: {
@@ -180,6 +183,7 @@ function setStep(step) {
   });
   document.body.classList.remove("step-home", "step-show", "step-culture");
   document.body.classList.add(`step-${step}`);
+  updateShowControlsUI();
   if (step !== "culture") modal.classList.remove("show");
   if (step === "home") {
     stopAuto();
@@ -192,6 +196,19 @@ function setStep(step) {
     particles = [];
     renderDecode("craft");
   }
+}
+
+function setShowControlsCollapsed(collapsed) {
+  showControlsCollapsed = collapsed;
+  updateShowControlsUI();
+}
+
+function updateShowControlsUI() {
+  panels.show.classList.toggle("is-collapsed", showControlsCollapsed);
+  document.body.classList.toggle("show-controls-collapsed", showControlsCollapsed);
+  showControlsCollapse.textContent = showControlsCollapsed ? "\u5c55\u5f00" : "\u6536\u8d77";
+  showControlsCollapse.setAttribute("aria-expanded", String(!showControlsCollapsed));
+  showControlsOpen.setAttribute("aria-expanded", String(!showControlsCollapsed));
 }
 
 function strike() {
@@ -510,6 +527,8 @@ backShowBtn.addEventListener("click", () => {
 
 homeBtn.addEventListener("click", () => setStep("home"));
 showHomeBtn.addEventListener("click", () => setStep("home"));
+showControlsCollapse.addEventListener("click", () => setShowControlsCollapsed(true));
+showControlsOpen.addEventListener("click", () => setShowControlsCollapsed(false));
 
 closeBtn.addEventListener("click", () => modal.classList.remove("show"));
 

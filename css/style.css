@@ -119,100 +119,185 @@ textarea {
 .shed {
   position: absolute;
   left: 50%;
-  top: 44%;
-  width: 620px;
-  height: 220px;
+  top: 42%;
+  width: 680px;
+  height: 250px;
   transform: translate(-50%, -50%);
-  opacity: 0.85;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 16px rgba(255, 144, 57, 0.18));
 }
 
 .shed::before {
   content: "";
   position: absolute;
-  left: 0;
-  top: 40px;
-  width: 100%;
-  height: 12px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(255, 211, 139, 0.7), transparent);
+  left: -26px;
+  right: -26px;
+  top: 8px;
+  height: 110px;
+  border-radius: 24px 24px 6px 6px;
+  background:
+    linear-gradient(162deg, transparent 0 13%, rgba(103, 48, 22, 0.58) 13.4% 15.2%, rgba(255, 199, 119, 0.5) 15.4% 16.4%, transparent 16.8%),
+    linear-gradient(18deg, transparent 0 13%, rgba(103, 48, 22, 0.58) 13.4% 15.2%, rgba(255, 199, 119, 0.5) 15.4% 16.4%, transparent 16.8%),
+    linear-gradient(180deg, transparent 0 31px, rgba(255, 208, 133, 0.72) 31px 41px, rgba(86, 39, 19, 0.48) 41px 46px, transparent 47px 71px, rgba(255, 193, 104, 0.38) 71px 78px, transparent 79px),
+    repeating-linear-gradient(90deg, transparent 0 80px, rgba(255, 199, 119, 0.28) 80px 86px, rgba(75, 34, 18, 0.34) 86px 91px, transparent 91px 160px);
   box-shadow:
-    0 52px 0 rgba(255, 211, 139, 0.18),
-    0 104px 0 rgba(255, 211, 139, 0.1);
+    inset 0 1px 0 rgba(255, 235, 180, 0.28),
+    0 58px 0 rgba(255, 181, 91, 0.16),
+    0 116px 0 rgba(255, 181, 91, 0.08);
 }
 
 .shed::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0 8%, rgba(255, 211, 139, 0.24) 8.2% 8.8%, transparent 9% 28%, rgba(255, 211, 139, 0.22) 28.2% 28.8%, transparent 29% 50%, rgba(255, 211, 139, 0.25) 50.2% 50.8%, transparent 51% 72%, rgba(255, 211, 139, 0.22) 72.2% 72.8%, transparent 73% 92%, rgba(255, 211, 139, 0.24) 92.2% 92.8%, transparent 93%);
+  left: 18px;
+  right: 18px;
+  top: 58px;
+  bottom: 0;
+  background:
+    linear-gradient(112deg, transparent 0 20%, rgba(255, 195, 111, 0.24) 20.3% 21.3%, transparent 21.6% 78%, rgba(255, 195, 111, 0.24) 78.3% 79.3%, transparent 79.6%),
+    linear-gradient(68deg, transparent 0 22%, rgba(255, 195, 111, 0.18) 22.3% 23.2%, transparent 23.5% 76%, rgba(255, 195, 111, 0.18) 76.3% 77.2%, transparent 77.5%),
+    linear-gradient(180deg, transparent 0 20px, rgba(255, 215, 142, 0.48) 20px 29px, transparent 30px 78px, rgba(255, 190, 99, 0.22) 78px 85px, transparent 86px),
+    linear-gradient(90deg, transparent 0 5%, rgba(101, 47, 24, 0.64) 5.2% 6.8%, rgba(255, 208, 133, 0.28) 6.9% 7.5%, transparent 7.8% 28%, rgba(93, 43, 23, 0.56) 28.2% 29.4%, transparent 29.8% 49%, rgba(119, 55, 24, 0.68) 49.2% 51%, rgba(255, 209, 136, 0.23) 51.2% 51.7%, transparent 52% 71%, rgba(93, 43, 23, 0.56) 71.2% 72.4%, transparent 72.8% 93%, rgba(101, 47, 24, 0.64) 93.2% 94.8%, transparent 95%);
   filter: drop-shadow(0 0 12px rgba(255, 155, 63, 0.25));
 }
 
 .artisan {
   position: absolute;
-  left: 50%;
-  bottom: 14.5vh;
-  width: 92px;
-  height: 148px;
-  transform: translateX(-50%);
+  left: calc(50% - 74px);
+  bottom: 12.7vh;
+  width: 172px;
+  height: 162px;
   filter: drop-shadow(0 0 22px rgba(255, 118, 36, 0.34));
   opacity: 0.92;
 }
 
+.artisan::before {
+  content: "";
+  position: absolute;
+  left: 57px;
+  top: 63px;
+  width: 118px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #130704 0 72%, #6f2d12 88%, #ffc66f 100%);
+  box-shadow: 0 0 14px rgba(255, 139, 42, 0.34);
+  transform: rotate(32deg);
+  transform-origin: left center;
+}
+
+.artisan::after {
+  content: "";
+  position: absolute;
+  left: 145px;
+  top: 114px;
+  width: 34px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 174, 0.9), rgba(255, 129, 32, 0.62) 48%, rgba(255, 84, 21, 0.08) 72%, transparent 74%);
+  filter: blur(0.4px);
+  transform: rotate(20deg);
+}
+
 .artisan .head {
   position: absolute;
-  top: 0;
-  left: 35px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
+  top: 6px;
+  left: 52px;
+  width: 24px;
+  height: 27px;
+  border-radius: 48% 52% 44% 46%;
   background: #100a08;
+  transform: rotate(14deg);
 }
 
 .artisan .body {
   position: absolute;
-  top: 26px;
-  left: 30px;
-  width: 36px;
-  height: 70px;
-  border-radius: 22px 22px 10px 10px;
+  top: 31px;
+  left: 47px;
+  width: 42px;
+  height: 68px;
+  border-radius: 18px 22px 12px 14px;
   background: linear-gradient(180deg, #1a0d08, #070503);
+  clip-path: polygon(32% 0, 73% 6%, 100% 80%, 66% 100%, 18% 91%, 0 24%);
+  transform: rotate(14deg);
+  transform-origin: 48% 86%;
 }
 
 .artisan .arm-left,
 .artisan .arm-right {
   position: absolute;
-  top: 42px;
-  width: 70px;
-  height: 9px;
+  height: 10px;
   background: #0b0604;
   border-radius: 999px;
 }
 
 .artisan .arm-left {
-  left: -24px;
-  transform-origin: right center;
-  transform: rotate(-24deg);
+  top: 59px;
+  left: 45px;
+  width: 42px;
+  transform-origin: left center;
+  transform: rotate(31deg);
+}
+
+.artisan .arm-left::after,
+.artisan .arm-right::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #080403;
+  box-shadow: 0 0 7px rgba(255, 119, 36, 0.22);
 }
 
 .artisan .arm-right {
-  left: 45px;
+  top: 66px;
+  left: 75px;
+  width: 50px;
   transform-origin: left center;
-  transform: rotate(22deg);
+  transform: rotate(32deg);
+}
+
+.artisan .arm-right::after {
+  left: auto;
+  right: -4px;
 }
 
 .artisan .leg-left,
 .artisan .leg-right {
   position: absolute;
-  top: 92px;
-  width: 12px;
-  height: 56px;
+  top: 93px;
+  width: 13px;
+  height: 66px;
   background: #090503;
-  border-radius: 8px;
+  border-radius: 9px;
+  transform-origin: top center;
 }
 
-.artisan .leg-left { left: 31px; transform: rotate(10deg); }
-.artisan .leg-right { left: 53px; transform: rotate(-10deg); }
+.artisan .leg-left { left: 51px; transform: rotate(27deg); }
+.artisan .leg-right { left: 76px; transform: rotate(-31deg); }
+
+.artisan .leg-left::after,
+.artisan .leg-right::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  width: 26px;
+  height: 9px;
+  border-radius: 999px;
+  background: #070302;
+}
+
+.artisan .leg-left::after {
+  right: -2px;
+  transform: rotate(-11deg);
+}
+
+.artisan .leg-right::after {
+  left: -2px;
+  transform: rotate(13deg);
+}
 
 .furnace {
   position: absolute;
@@ -270,8 +355,22 @@ textarea {
   background: rgba(255, 210, 122, 0.32);
 }
 
-.lantern.one { left: 16vw; top: 34vh; }
-.lantern.two { right: 15vw; top: 38vh; animation-delay: -1.5s; }
+.lantern::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  bottom: -18px;
+  width: 6px;
+  height: 20px;
+  border-radius: 0 0 999px 999px;
+  background: linear-gradient(180deg, rgba(255, 198, 91, 0.82), rgba(146, 37, 19, 0.82));
+  box-shadow:
+    -7px -4px 0 -2px rgba(255, 198, 91, 0.4),
+    7px -4px 0 -2px rgba(255, 198, 91, 0.4);
+}
+
+.lantern.one { left: calc(50% - 318px); top: 40vh; }
+.lantern.two { right: auto; left: calc(50% + 280px); top: 41.5vh; animation-delay: -1.5s; }
 
 @keyframes swing {
   from { transform: rotate(-3deg); }
@@ -288,6 +387,7 @@ textarea {
 .home-screen,
 .panel,
 .show-hud,
+.show-hud-tab,
 .culture-panel,
 .status {
   pointer-events: auto;
@@ -482,17 +582,85 @@ button.primary {
   opacity: 0;
   transform: translate(-50%, 16px);
   pointer-events: none;
-  transition: opacity 0.24s ease, transform 0.24s ease;
+  transition: opacity 0.32s ease, transform 0.32s ease;
 }
 
 .show-hud.active {
   transform: translate(-50%, 0);
 }
 
+.show-hud.active.is-collapsed {
+  opacity: 0;
+  transform: translate(-50%, calc(100% + 42px));
+  pointer-events: none;
+}
+
+.show-collapse-btn {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  z-index: 2;
+  min-height: 34px;
+  padding: 7px 13px;
+  border-color: rgba(255, 210, 122, 0.42);
+  background: rgba(8, 10, 22, 0.68);
+  color: rgba(255, 226, 170, 0.92);
+  font-size: 13px;
+  box-shadow: 0 0 18px rgba(255, 128, 48, 0.12);
+}
+
+.show-hud-tab {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 12;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-color: rgba(255, 210, 122, 0.48);
+  background: linear-gradient(135deg, rgba(8, 10, 22, 0.78), rgba(48, 19, 10, 0.72));
+  color: rgba(255, 235, 198, 0.96);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.34), 0 0 22px rgba(255, 128, 48, 0.16);
+  opacity: 0;
+  transform: translate(-50%, 18px);
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease, background 0.16s ease, box-shadow 0.16s ease;
+}
+
+body.step-show.show-controls-collapsed .show-hud-tab {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+body.step-show.show-controls-collapsed .ui::before,
+body.step-show.show-controls-collapsed .ui::after {
+  content: "";
+  position: fixed;
+  left: 50%;
+  bottom: 9px;
+  height: 3px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+body.step-show.show-controls-collapsed .ui::before {
+  width: min(360px, calc(100vw - 64px));
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.step-show.show-controls-collapsed .ui::after {
+  width: min(360px, calc(100vw - 64px));
+  background: linear-gradient(90deg, var(--gold), var(--orange));
+  box-shadow: 0 0 18px rgba(255, 140, 42, 0.52);
+  clip-path: inset(0 calc(100% - var(--spark-level, 18%)) 0 0);
+}
+
 .show-title {
   display: flex;
   align-items: baseline;
   gap: 10px;
+  padding-right: 92px;
 }
 
 .show-title span {
@@ -971,7 +1139,25 @@ body.step-show .status {
   .show-hud {
     bottom: 10px;
     width: calc(100vw - 20px);
-    padding: 12px;
+    padding: 14px 12px 12px;
+  }
+
+  .show-title {
+    padding-right: 90px;
+  }
+
+  .show-collapse-btn {
+    right: 10px;
+    top: 10px;
+    min-height: 42px;
+    padding: 9px 14px;
+    font-size: 14px;
+  }
+
+  .show-hud-tab {
+    bottom: 14px;
+    min-height: 48px;
+    padding: 12px 20px;
   }
 
   .show-actions,
@@ -993,6 +1179,9 @@ body.step-show .status {
     width: 82vw;
     top: 47%;
   }
+
+  .lantern.one { left: 12vw; top: 42vh; }
+  .lantern.two { left: auto; right: 12vw; top: 43vh; }
 
   .artisan {
     bottom: 13vh;
