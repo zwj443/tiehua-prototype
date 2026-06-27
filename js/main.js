@@ -11,6 +11,7 @@ const panels = {
 const enterBtn = document.getElementById("enterBtn");
 const aboutBtn = document.getElementById("aboutBtn");
 const strikeBtn = document.getElementById("strikeBtn");
+const fireworkStyleBtn = document.getElementById("fireworkStyleBtn");
 const lookBtn = document.getElementById("lookBtn");
 const autoBtn = document.getElementById("autoBtn");
 const homeLowBtn = document.getElementById("homeLowBtn");
@@ -28,6 +29,7 @@ const modalText = document.getElementById("modalText");
 const closeBtn = document.getElementById("closeBtn");
 const lookHint = document.getElementById("lookHint");
 const flashLayer = document.getElementById("flashLayer");
+const artisanActor = document.getElementById("artisanActor");
 const decodeImage = document.getElementById("decodeImage");
 const decodeEyebrow = document.getElementById("decodeEyebrow");
 const decodeTitle = document.getElementById("decodeTitle");
@@ -43,7 +45,24 @@ let userAudioUnlocked = false;
 let lastStrike = -Infinity;
 let lookX = 0;
 let lookY = 0;
+let targetLookX = 0;
+let targetLookY = 0;
 let showControlsCollapsed = false;
+let isStriking = false;
+let strikeImpactTimer = null;
+let strikeEndTimer = null;
+let strikeBurstTimer = null;
+let sparkResetTimer = null;
+
+const STRIKE_IMPACT_DELAY = 680;
+const STRIKE_ANIMATION_DURATION = 1250;
+
+const fireworkStyles = [
+  { id: "spray", label: "\u6837\u5f0f\uff1a\u57fa\u7840\u55b7\u6d12" },
+  { id: "ring", label: "\u6837\u5f0f\uff1a\u65cb\u8f6c\u5706\u73af" }
+];
+let fireworkStyleIndex = 0;
+let activeStrikeStyleId = fireworkStyles[fireworkStyleIndex].id;
 
 const decodeModules = {
   craft: {
@@ -186,12 +205,16 @@ function setStep(step) {
   updateShowControlsUI();
   if (step !== "culture") modal.classList.remove("show");
   if (step === "home") {
+    setLook(0, 0);
+    resetStrikeActor(true);
     stopAuto();
     particles = [];
     lastStrike = -Infinity;
     pauseAmbient();
   }
   if (step === "culture") {
+    setLook(0, 0);
+    resetStrikeActor(true);
     stopAuto();
     particles = [];
     renderDecode("craft");
@@ -213,19 +236,78 @@ function updateShowControlsUI() {
 
 function strike() {
   const now = performance.now();
-  if (now - lastStrike < 450) return;
-  lastStrike = now;
+  if (isStriking || now - lastStrike < 450) return;
   setStep("show");
+  isStriking = true;
+  activeStrikeStyleId = fireworkStyles[fireworkStyleIndex].id;
+  strikeBtn.disabled = true;
+  strikeBtn.setAttribute("aria-busy", "true");
+
+  clearTimeout(strikeImpactTimer);
+  clearTimeout(strikeEndTimer);
+  artisanActor.classList.remove("actor-striking");
+  void artisanActor.offsetWidth;
+  artisanActor.classList.add("actor-striking");
+
+  strikeImpactTimer = setTimeout(emitStrikeImpact, STRIKE_IMPACT_DELAY);
+  strikeEndTimer = setTimeout(resetStrikeActor, STRIKE_ANIMATION_DURATION);
+}
+
+function resetStrikeActor(cancelEffects = false) {
+  clearTimeout(strikeImpactTimer);
+  clearTimeout(strikeEndTimer);
+  strikeImpactTimer = null;
+  strikeEndTimer = null;
+  if (cancelEffects) {
+    clearTimeout(strikeBurstTimer);
+    clearTimeout(sparkResetTimer);
+    strikeBurstTimer = null;
+    sparkResetTimer = null;
+    root.style.setProperty("--spark-level", "18%");
+  }
+  isStriking = false;
+  artisanActor.classList.remove("actor-striking");
+  strikeBtn.disabled = false;
+  strikeBtn.removeAttribute("aria-busy");
+}
+
+function emitStrikeImpact() {
+  strikeImpactTimer = null;
+  if (!isStriking || !document.body.classList.contains("step-show")) return;
+  lastStrike = performance.now();
   playSound("strike");
 
-  const baseX = width * 0.5 + lookX * 32;
-  const baseY = height * 0.78;
+  const baseX = width * 0.5 + lookX * 24 - 4;
+  const baseY = height * 0.82;
   const burstY = height * (lookY < -0.2 ? 0.16 : 0.24);
   const count = lowMode ? 180 : 450;
 
+  emitImpactJet(baseX, baseY, count, activeStrikeStyleId);
+
+  strikeBurstTimer = setTimeout(() => {
+    strikeBurstTimer = null;
+    if (!document.body.classList.contains("step-show")) return;
+    if (activeStrikeStyleId === "ring") {
+      ringBurst(count, burstY, true);
+    } else {
+      burst(count, burstY, true);
+    }
+  }, 420);
+  flash();
+  root.style.setProperty("--spark-level", "100%");
+  sparkResetTimer = setTimeout(() => {
+    sparkResetTimer = null;
+    root.style.setProperty("--spark-level", "18%");
+  }, 900);
+  if ("vibrate" in navigator) navigator.vibrate(55);
+}
+
+function emitImpactJet(baseX, baseY, count, styleId) {
+  const jetCount = styleId === "ring" ? count * 0.3 : count * 0.48;
   for (let i = 0; i < count * 0.48; i++) {
-    const angle = random(-Math.PI * 0.6, -Math.PI * 0.4);
-    const speed = random(6, 14);
+    if (i >= jetCount) break;
+    const angle = styleId === "ring" ? random(-Math.PI * 0.55, -Math.PI * 0.42) : random(-Math.PI * 0.6, -Math.PI * 0.4);
+    const speed = styleId === "ring" ? random(5.4, 11) : random(6, 14);
     particles.push(makeParticle(
       baseX + random(-12, 12),
       baseY + random(-8, 8),
@@ -237,12 +319,6 @@ function strike() {
       "jet"
     ));
   }
-
-  setTimeout(() => burst(count, burstY, true), 420);
-  flash();
-  root.style.setProperty("--spark-level", "100%");
-  setTimeout(() => root.style.setProperty("--spark-level", "18%"), 900);
-  if ("vibrate" in navigator) navigator.vibrate(55);
 }
 
 function burst(count, burstY, withSound = false) {
@@ -300,6 +376,57 @@ function burst(count, burstY, withSound = false) {
   }
 }
 
+function ringBurst(count, burstY, withSound = false) {
+  if (withSound) playSound("burst");
+  flash();
+
+  const centerX = width * 0.5 + lookX * 26;
+  const centerY = burstY + random(-8, 10);
+  const ringCount = lowMode ? 160 : Math.floor(count * 0.72);
+
+  for (let i = 0; i < ringCount; i++) {
+    const progress = i / ringCount;
+    const angle = progress * Math.PI * 2 * 2.2 + random(-0.08, 0.08);
+    const ring = i % 3;
+    const radius = (lowMode ? 42 : 58) + ring * 22 + random(-8, 10);
+    const spin = 2.6 + ring * 0.42;
+    const outward = random(0.35, 1.45);
+    const x = centerX + Math.cos(angle) * radius * random(0.76, 1.08);
+    const y = centerY + Math.sin(angle) * radius * 0.56 * random(0.76, 1.08);
+    const tangentX = -Math.sin(angle) * spin;
+    const tangentY = Math.cos(angle) * spin * 0.56;
+
+    particles.push(makeParticle(
+      x,
+      y,
+      tangentX + Math.cos(angle) * outward + random(-0.42, 0.42),
+      tangentY + Math.sin(angle) * outward * 0.48 + random(-0.32, 0.32),
+      random(1.2, 3.4),
+      random(92, 150),
+      random(34, 48),
+      "ring"
+    ));
+  }
+
+  const spokeCount = lowMode ? 34 : 82;
+  for (let i = 0; i < spokeCount; i++) {
+    const angle = random(0, Math.PI * 2);
+    const speed = random(2.2, 8.8);
+    particles.push(makeParticle(
+      centerX + random(-18, 18),
+      centerY + random(-10, 10),
+      Math.cos(angle) * speed * 1.45,
+      Math.sin(angle) * speed * 0.72,
+      random(1.4, 4.2),
+      random(70, 124),
+      random(28, 44),
+      "ring"
+    ));
+  }
+
+  if (withSound) playSound("whoosh");
+}
+
 function flash() {
   flashLayer.classList.add("show");
   setTimeout(() => flashLayer.classList.remove("show"), 70);
@@ -308,10 +435,10 @@ function flash() {
 function drawParticle(p) {
   const t = Math.max(p.life / p.maxLife, 0);
   const alpha = Math.min(1, t * 1.35);
-  const light = p.type === "near" || p.type === "overhead" ? 74 : 62;
+  const light = p.type === "near" || p.type === "overhead" || p.type === "ring" ? 74 : 62;
   const color = `hsla(${p.hue}, 100%, ${light}%, ${alpha})`;
   const core = `hsla(52, 100%, 88%, ${alpha})`;
-  const trailWidth = p.type === "overhead" ? p.size * 1.2 : p.size * 0.78;
+  const trailWidth = p.type === "overhead" || p.type === "ring" ? p.size * 1.08 : p.size * 0.78;
 
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
@@ -376,9 +503,9 @@ function updateParticles() {
     p.px = p.x;
     p.py = p.y;
     p.trail.push({ x: p.x, y: p.y });
-    if (p.trail.length > (p.type === "overhead" ? 12 : 8)) p.trail.shift();
+    if (p.trail.length > (p.type === "overhead" || p.type === "ring" ? 12 : 8)) p.trail.shift();
 
-    p.vy += gravity * (p.type === "near" || p.type === "overhead" ? 1.18 : 1);
+    p.vy += gravity * (p.type === "ring" ? 0.38 : (p.type === "near" || p.type === "overhead" ? 1.18 : 1));
     p.vx *= drag;
     p.vy *= drag;
     p.x += p.vx;
@@ -395,10 +522,16 @@ function updateParticles() {
 }
 
 function setLook(x, y) {
-  lookX = Math.max(-1, Math.min(1, x));
-  lookY = Math.max(-1, Math.min(1, y));
+  targetLookX = Math.max(-0.74, Math.min(0.74, x));
+  targetLookY = Math.max(-0.88, Math.min(0.82, y));
+}
+
+function updateCameraLook() {
+  lookX += (targetLookX - lookX) * 0.09;
+  lookY += (targetLookY - lookY) * 0.09;
   root.style.setProperty("--look-x", lookX.toFixed(3));
   root.style.setProperty("--look-y", lookY.toFixed(3));
+  requestAnimationFrame(updateCameraLook);
 }
 
 function showLookHint() {
@@ -418,6 +551,15 @@ function setLowMode(enabled) {
   const label = lowMode ? "普通模式" : "低性能模式";
   homeLowBtn.textContent = label;
   homeLowBtn.setAttribute("aria-pressed", String(lowMode));
+}
+
+function updateFireworkStyleButton() {
+  fireworkStyleBtn.textContent = fireworkStyles[fireworkStyleIndex].label;
+}
+
+function cycleFireworkStyle() {
+  fireworkStyleIndex = (fireworkStyleIndex + 1) % fireworkStyles.length;
+  updateFireworkStyleButton();
 }
 
 function updateSoundButtons() {
@@ -463,10 +605,13 @@ function renderDecode(key) {
 window.addEventListener("resize", resize);
 
 window.addEventListener("mousemove", (event) => {
+  if (!document.body.classList.contains("step-show")) return;
   const x = (event.clientX / width - 0.5) * 2;
   const y = (event.clientY / height - 0.5) * 2;
-  setLook(x * 0.72, y * 0.72);
+  setLook(x * 0.58, y * 0.52);
 });
+
+window.addEventListener("mouseleave", () => setLook(0, 0));
 
 window.addEventListener("touchmove", (event) => {
   const touch = event.touches[0];
@@ -493,6 +638,7 @@ enterBtn.addEventListener("click", () => {
 
 aboutBtn.addEventListener("click", showAbout);
 strikeBtn.addEventListener("click", strike);
+fireworkStyleBtn.addEventListener("click", cycleFireworkStyle);
 
 lookBtn.addEventListener("click", () => {
   setLook(0, -0.88);
@@ -540,6 +686,8 @@ resize();
 ctx.fillStyle = "#050712";
 ctx.fillRect(0, 0, width, height);
 setLowMode(false);
+updateFireworkStyleButton();
 updateSoundButtons();
 setStep("home");
+updateCameraLook();
 updateParticles();

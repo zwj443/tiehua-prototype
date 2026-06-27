@@ -163,33 +163,34 @@ textarea {
 
 .artisan {
   position: absolute;
-  left: calc(50% - 74px);
+  left: calc(50% - 245px);
   bottom: 12.7vh;
-  width: 172px;
+  width: 260px;
   height: 162px;
   filter: drop-shadow(0 0 22px rgba(255, 118, 36, 0.34));
   opacity: 0.92;
+  transform-origin: 78px 150px;
 }
 
 .artisan::before {
   content: "";
   position: absolute;
-  left: 57px;
+  left: 70px;
   top: 63px;
-  width: 118px;
+  width: 205px;
   height: 6px;
   border-radius: 999px;
   background: linear-gradient(90deg, #130704 0 72%, #6f2d12 88%, #ffc66f 100%);
   box-shadow: 0 0 14px rgba(255, 139, 42, 0.34);
-  transform: rotate(32deg);
+  transform: rotate(22deg);
   transform-origin: left center;
 }
 
 .artisan::after {
   content: "";
   position: absolute;
-  left: 145px;
-  top: 114px;
+  left: 230px;
+  top: 128px;
   width: 34px;
   height: 16px;
   border-radius: 50%;
@@ -201,7 +202,7 @@ textarea {
 .artisan .head {
   position: absolute;
   top: 6px;
-  left: 52px;
+  left: 56px;
   width: 24px;
   height: 27px;
   border-radius: 48% 52% 44% 46%;
@@ -212,7 +213,7 @@ textarea {
 .artisan .body {
   position: absolute;
   top: 31px;
-  left: 47px;
+  left: 52px;
   width: 42px;
   height: 68px;
   border-radius: 18px 22px 12px 14px;
@@ -232,10 +233,10 @@ textarea {
 
 .artisan .arm-left {
   top: 59px;
-  left: 45px;
-  width: 42px;
+  left: 52px;
+  width: 70px;
   transform-origin: left center;
-  transform: rotate(31deg);
+  transform: rotate(22deg);
 }
 
 .artisan .arm-left::after,
@@ -252,11 +253,11 @@ textarea {
 }
 
 .artisan .arm-right {
-  top: 66px;
-  left: 75px;
-  width: 50px;
+  top: 64px;
+  left: 96px;
+  width: 66px;
   transform-origin: left center;
-  transform: rotate(32deg);
+  transform: rotate(27deg);
 }
 
 .artisan .arm-right::after {
@@ -275,8 +276,8 @@ textarea {
   transform-origin: top center;
 }
 
-.artisan .leg-left { left: 51px; transform: rotate(27deg); }
-.artisan .leg-right { left: 76px; transform: rotate(-31deg); }
+.artisan .leg-left { left: 47px; transform: rotate(25deg); }
+.artisan .leg-right { left: 94px; transform: rotate(-23deg); }
 
 .artisan .leg-left::after,
 .artisan .leg-right::after {
@@ -297,6 +298,175 @@ textarea {
 .artisan .leg-right::after {
   left: -2px;
   transform: rotate(13deg);
+}
+
+.artisan.actor-striking {
+  animation: actorStrike 1.25s cubic-bezier(0.2, 0.8, 0.18, 1) both;
+}
+
+.artisan.actor-striking::before {
+  animation: toolStrike 1.25s cubic-bezier(0.2, 0.8, 0.18, 1) both;
+}
+
+.artisan.actor-striking::after {
+  animation: impactGlow 1.25s ease both;
+}
+
+.artisan.actor-striking .head {
+  animation: headStrike 1.25s cubic-bezier(0.2, 0.8, 0.18, 1) both;
+}
+
+.artisan.actor-striking .body {
+  animation: bodyStrike 1.25s cubic-bezier(0.2, 0.8, 0.18, 1) both;
+}
+
+.artisan.actor-striking .arm-left {
+  animation: leadArmStrike 1.25s cubic-bezier(0.2, 0.8, 0.18, 1) both;
+}
+
+.artisan.actor-striking .arm-right {
+  animation: rearArmStrike 1.25s cubic-bezier(0.2, 0.8, 0.18, 1) both;
+}
+
+.artisan.actor-striking .leg-left {
+  animation: frontLegBrace 1.25s cubic-bezier(0.2, 0.8, 0.18, 1) both;
+}
+
+.artisan.actor-striking .leg-right {
+  animation: rearLegDrive 1.25s cubic-bezier(0.2, 0.8, 0.18, 1) both;
+}
+
+@keyframes actorStrike {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  14% { transform: translate(-8px, 2px) rotate(-2deg); }
+  34% { transform: translate(-16px, 0) rotate(-4deg); }
+  52% { transform: translate(12px, 3px) rotate(4deg); }
+  60% { transform: translate(17px, 4px) rotate(5deg); }
+  78% { transform: translate(5px, 2px) rotate(1deg); }
+}
+
+@keyframes toolStrike {
+  0%, 100% { transform: rotate(22deg); }
+  14% { transform: translate(-8px, -2px) rotate(4deg); }
+  34% { transform: translate(-22px, -24px) rotate(-50deg); }
+  44% { transform: translate(-14px, -21px) rotate(-35deg); }
+  56% { transform: translate(15px, 9px) rotate(27deg); }
+  62% { transform: translate(19px, 12px) rotate(30deg); }
+  80% { transform: translate(6px, 5px) rotate(24deg); }
+}
+
+@keyframes impactGlow {
+  0%, 47%, 100% {
+    opacity: 0.62;
+    transform: rotate(20deg) scale(1);
+  }
+  56%, 64% {
+    opacity: 1;
+    transform: translate(8px, 7px) rotate(24deg) scale(1.32, 1.08);
+  }
+  78% {
+    opacity: 0.72;
+    transform: translate(2px, 3px) rotate(22deg) scale(1.08);
+  }
+}
+
+@keyframes headStrike {
+  0%, 100% { transform: rotate(14deg); }
+  14% { transform: translate(-3px, 1px) rotate(7deg); }
+  34% { transform: translate(-6px, -2px) rotate(-8deg); }
+  56%, 64% { transform: translate(8px, 4px) rotate(28deg); }
+  80% { transform: translate(2px, 1px) rotate(18deg); }
+}
+
+@keyframes bodyStrike {
+  0%, 100% { transform: rotate(14deg); }
+  14% { transform: translate(-4px, 1px) rotate(5deg); }
+  34% { transform: translate(-8px, -1px) rotate(-8deg); }
+  52% { transform: translate(9px, 3px) rotate(28deg); }
+  62% { transform: translate(12px, 5px) rotate(34deg); }
+  82% { transform: translate(3px, 2px) rotate(18deg); }
+}
+
+@keyframes leadArmStrike {
+  0%, 100% {
+    top: 59px;
+    left: 52px;
+    width: 70px;
+    transform: rotate(22deg);
+  }
+  18% {
+    top: 56px;
+    left: 45px;
+    width: 72px;
+    transform: rotate(0deg);
+  }
+  36% {
+    top: 45px;
+    left: 40px;
+    width: 76px;
+    transform: rotate(-38deg);
+  }
+  56%, 64% {
+    top: 62px;
+    left: 64px;
+    width: 79px;
+    transform: rotate(29deg);
+  }
+  82% {
+    top: 60px;
+    left: 56px;
+    width: 72px;
+    transform: rotate(24deg);
+  }
+}
+
+@keyframes rearArmStrike {
+  0%, 100% {
+    top: 64px;
+    left: 96px;
+    width: 66px;
+    transform: rotate(27deg);
+  }
+  18% {
+    top: 58px;
+    left: 82px;
+    width: 68px;
+    transform: rotate(2deg);
+  }
+  36% {
+    top: 44px;
+    left: 70px;
+    width: 74px;
+    transform: rotate(-42deg);
+  }
+  56%, 64% {
+    top: 68px;
+    left: 112px;
+    width: 76px;
+    transform: rotate(31deg);
+  }
+  82% {
+    top: 65px;
+    left: 100px;
+    width: 68px;
+    transform: rotate(28deg);
+  }
+}
+
+@keyframes frontLegBrace {
+  0%, 100% { transform: rotate(25deg); }
+  16% { transform: rotate(18deg); }
+  36% { transform: translate(-4px, 0) rotate(13deg); }
+  56%, 68% { transform: translate(4px, 0) rotate(32deg); }
+  84% { transform: rotate(26deg); }
+}
+
+@keyframes rearLegDrive {
+  0%, 100% { transform: rotate(-23deg); }
+  16% { transform: translate(-5px, 0) rotate(-31deg); }
+  36% { transform: translate(-8px, 1px) rotate(-39deg); }
+  56%, 68% { transform: translate(6px, 0) rotate(-18deg); }
+  84% { transform: rotate(-22deg); }
 }
 
 .furnace {
@@ -560,12 +730,26 @@ button:focus-visible {
   outline: none;
 }
 
+button:disabled {
+  cursor: default;
+  opacity: 0.62;
+  transform: none;
+  box-shadow: none;
+}
+
 button.primary {
   background: linear-gradient(135deg, rgba(255, 211, 122, 0.26), rgba(255, 118, 35, 0.38));
   color: rgba(255, 244, 220, 0.96);
   border-color: rgba(255, 210, 122, 0.52);
   font-weight: 700;
   box-shadow: inset 0 0 18px rgba(255, 210, 122, 0.1), 0 0 28px rgba(255, 118, 35, 0.18);
+}
+
+#fireworkStyleBtn {
+  border-color: rgba(255, 174, 91, 0.48);
+  color: rgba(255, 226, 176, 0.96);
+  background: rgba(36, 16, 10, 0.52);
+  font-weight: 700;
 }
 
 .show-hud {
@@ -1184,6 +1368,7 @@ body.step-show .status {
   .lantern.two { left: auto; right: 12vw; top: 43vh; }
 
   .artisan {
+    left: calc(50% - 198px);
     bottom: 13vh;
   }
 
