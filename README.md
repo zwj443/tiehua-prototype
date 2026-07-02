@@ -60,7 +60,6 @@
 │     ├─ whoosh.mp3
 │     ├─ ui_click.mp3
 │     └─ drum.mp3
-├─ tiehua_web_prototype.html
 └─ README.md
 ```
 
